@@ -5,6 +5,13 @@ alias command for command prompt
 	Requires Microsoft's DOSKEY
 	https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/doskey
 
+# alias.cmd install location
+	
+	Place the alias.cmd file in a PATH folder
+	You CAN put it in the %windir% if you would like, however I personally put it
+	in my C:\Shell folder which also has its own ENV called %Shell% which is also
+	in my PATH, just as an example.
+
 # In-command help reads as follows:
 ALIAS
 	-h --help or /?
