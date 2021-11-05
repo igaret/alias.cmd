@@ -12,10 +12,20 @@
 :parser3
 	if "%1"=="--help" ( goto :help ) else ( goto :parser4 )
 :parser4
-	if "%1"=="clear-aliases" ( goto :clear ) else ( goto :parser5 )
+	if "%1"=="alias" ( goto :selfpreservation ) else ( goto :parser5 )
 :parser5
+	if "%1"=="clear-aliases" ( goto :clear ) else ( goto :parser6 )
+:parser6
 	if "%1"=="" ( goto :list ) else ( goto :alias )
 	goto :end
+:selfpreservation
+echo.
+echo Cannot set an ALIAS for ALIAS, duh... fucking moron. 
+echo.
+echo ;) You know I love you guys
+echo.
+echo Stay scripting 
+echo.
 :list
 echo.
 	doskey /macros
