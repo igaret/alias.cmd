@@ -10,21 +10,20 @@
 :parser2
 	if "%1"=="-h" ( goto :help ) else ( goto :parser3 )
 :parser3
-	if "%1"=="--help" ( goto :help ) else ( goto :parser4 )
-:parser4
-	if "%1"=="alias" ( goto :selfpreservation ) else ( goto :parser5 )
+	if "%1"=="--help" ( goto :help ) else ( goto :parser4a )
+:parser4a
+	if "%1"=="alias" ( goto :selfpreservation ) else ( goto :parser4b )
+:parser4b
+	if "%1"=="doskey" ( goto :selfpreservation ) else ( goto :parser5 )
 :parser5
 	if "%1"=="clear-aliases" ( goto :clear ) else ( goto :parser6 )
 :parser6
 	if "%1"=="" ( goto :list ) else ( goto :alias )
 	goto :end
 :selfpreservation
+set arg=%1
 echo.
-echo Cannot set an ALIAS for ALIAS, duh... fucking moron. 
-echo.
-echo ;) You know I love you guys
-echo.
-echo Stay scripting 
+echo Cannot set an %arg% for %arg%, it would be creating an alias/doskey paradox. 
 echo.
 :list
 echo.
