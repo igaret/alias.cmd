@@ -76,3 +76,4 @@ goto :end
 :end
 	doskey /macros>%userprofile%\Doskey-Aliases\.aliases
 	doskey /macros>>%userprofile%\Doskey-Aliases\.aliases_history
+REM End of Script
