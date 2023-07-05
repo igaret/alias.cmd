@@ -3,15 +3,13 @@
 :debug_exec
 @echo on
 shift /1
-echo %0 %1 %2 %3 %4
+::custom shifting
 set 1=%2
 set 2=%3
 set 3=%4
 set 4=%5
 set 5=%6
 set 6=%7
-echo %0 %1 %2 %3 %4
-
 :exec
         setlocal enableextensions
         if not exist %userprofile%\Alias-Conf ( goto :conf-setup ) else ( goto :conf-load )
