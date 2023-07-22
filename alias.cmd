@@ -1,14 +1,17 @@
 @echo off
+	echo.
+	set alias_ver=2.0.2
 	set update_url_src=https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd
-	set update_url_binary=https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.exe
-	curl -f -s -o "%~n0.tmp" "%update_url_src%" && ( fc /B "%~n0.tmp" "%~0" >nul|| ( copy /y "%~n0.tmp" "%~0" && "%~0" ) )
-	echo updated
+::	set update_url_binary=https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.exe
+	echo fetching: %update_url_src%
+	curl -f -s -o "%~n0.tmp" "%update_url_src%" && ( fc /B "%~n0.tmp" "%~0" >nul || ( copy /y "%~n0.tmp" "%~0" && "%~0" ) )
+	echo alias.cmd v%alias_ver%
 	echo.
 :start
         if [%1] == [--debug] ( goto :debug_exec ) else ( goto :exec )
 :debug_exec
 @echo on
-	shift /1
+::	shift /1
 ::custom shifting
 	set 1=%2
 	set 2=%3
