@@ -1,15 +1,21 @@
 @echo off
+	set update_url_src=https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd
+	set update_url_binary=https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.exe
+	curl -f -s -o "%~n0.tmp" "%update_url_src%" && ( fc /B "%~n0.tmp" "%~0" >nul|| ( copy /y "%~n0.tmp" "%~0" && "%~0" ) )
+	echo updated
+	echo.
+:start
         if [%1] == [--debug] ( goto :debug_exec ) else ( goto :exec )
 :debug_exec
 @echo on
-shift /1
+	shift /1
 ::custom shifting
-set 1=%2
-set 2=%3
-set 3=%4
-set 4=%5
-set 5=%6
-set 6=%7
+	set 1=%2
+	set 2=%3
+	set 3=%4
+	set 4=%5
+	set 5=%6
+	set 6=%7
 :exec
         setlocal enableextensions
         if not exist %userprofile%\Alias-Conf ( goto :conf-setup ) else ( goto :conf-load )
@@ -162,6 +168,7 @@ goto :save
         del %savefile%
         goto :save
 :save
+	del %savefile%
         doskey /macros>%savefile%
-        doskey /macros>>%savefile%
+        doskey /macros>>%savefile%_history
 :end
