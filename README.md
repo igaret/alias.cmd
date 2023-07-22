@@ -1,7 +1,8 @@
-# cmd-alias
+# alias
+
 alias command for command prompt
 	
-	ALIAS.CMD
+	ALIAS.EXE or ALIAS.CMD
 	Requires Microsoft's DOSKEY
 	https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/doskey
 
