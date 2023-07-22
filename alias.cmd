@@ -1,13 +1,13 @@
 @echo off
-	if "%alias_firstrun%"=="complete" ( goto :init ) else ( goto :setup )
+	if "%alias_firstrun%"=="complete" ( goto :start ) else ( goto :setup )
 :setup
 	setx walls "%SystemDrive%\Walls" /m
-	if not exist %walls% ( goto :create_walls ) else ( goto :update )
+	if not exist %walls% ( goto :create_walls ) else ( goto :start )
 :create_walls
 	mkdir %walls%
 	setx alias_firstrun "complete" /m
 	setx PATH "%PATH%;%walls%" /m
-	goto :update
+	goto :end
 :update
 	set alias_vars="%*"
 	set update_url_src=https://raw.githubusercontent.com/izryel/alias.cmd/master/aliasd.cmd
