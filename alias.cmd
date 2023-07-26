@@ -13,13 +13,15 @@
 	goto :end
 :update-check
 	set update_url_check=https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt
-	curl %update_url_check% -o %tmp%\alias_version_update.txt
-	set /p alias_version_update=<%tmp%\alias_version_update.txt
+	curl %update_url_check% -o %tmp%\alias_version_update.txt >nul
+	set /p alias_version_update=<%tmp%\alias_version_update.txt >nul
 	if [%alias_version_update%] gtr [%current_version%] ( goto :update-continue ) else ( goto :up-to-date )
 :update-continue
 	set update_url_src=https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt
-	curl %update_url_src% -o %tmp%\alias.cmd
-	type %walls%\alias.cmd > %walls%\alias.test
+	curl %update_url_src% -o %tmp%\alias.cmd >nul
+	type %walls%\alias.cmd > %walls%\alias.test >nul
+	echo alias updated from %current_version% to %alias_version_update%
+	echo.
 	del /s /q %tmp%\alias_version_update.txt
 	goto :cleanup
 :start
