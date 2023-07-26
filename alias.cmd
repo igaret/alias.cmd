@@ -1,5 +1,5 @@
 @echo off
-	set current_version=2.01
+	set current_version=2.02
 	if "%1"=="update" ( goto :update-check ) else ( goto :firstrun )
 :firstrun
 	if "%alias_firstrun%"=="complete" ( goto :start ) else ( goto :setup )
