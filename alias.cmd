@@ -1,17 +1,26 @@
 @echo off
+	set current_version=2.01
+	if "%1"=="update" ( goto :update-check ) else ( goto :firstrun )
+:firstrun
 	if "%alias_firstrun%"=="complete" ( goto :start ) else ( goto :setup )
 :setup
-	setx walls "%SystemDrive%\Walls" /m
+	setx walls "%SystemDrive%\Walls" /m >nul
 	if not exist %walls% ( goto :create_walls ) else ( goto :start )
 :create_walls
 	mkdir %walls%
-	setx alias_firstrun "complete" /m
-	setx PATH "%PATH%;%walls%" /m
+	setx alias_firstrun "complete" /m >nul
+	setx PATH "%PATH%;%walls%" /m >nul
 	goto :end
-:update
-	set alias_vars="%*"
-	set update_url_src=https://raw.githubusercontent.com/izryel/alias.cmd/master/aliasd.cmd
-	curl %update_url_src% -o %walls%\aliasd.cmd
+:update-check
+	set update_url_check=https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt
+	curl %update_url_check% -o %tmp%\alias_version_update.txt
+	set /p alias_version_update=<%tmp%\alias_version_update.txt
+	if [%alias_version_update%] gtr [%current_version%] ( goto :update-continue ) else ( goto :up-to-date )
+:update-continue
+	set update_url_src=https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt
+	curl %update_url_src% -o %tmp%\alias.cmd
+	type %walls%\alias.cmd > %walls%\alias.test
+	del /s /q %tmp%\alias_version_update.txt
 	goto :cleanup
 :start
 	if [%1] == [--debug] ( goto :debug_exec ) else ( goto :exec )
@@ -131,6 +140,9 @@ goto :save
 :save
 	doskey /macros>%useraliases%
 	doskey /macros>>%useraliases_history%
+:up-to-date
+	echo alias.cmd is up to date
+	echo.
 :cleanup
 	set useraliases=""
 	set cmd_as_arg=""
