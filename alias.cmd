@@ -19,7 +19,7 @@
 :update-continue
 	set update_url_src=https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt
 	curl %update_url_src% -o %tmp%\alias.cmd >nul
-	type %walls%\alias.cmd > %walls%\alias.test >nul
+	type %walls%\alias.cmd > %walls%\alias.cmd >nul
 	echo alias updated from %current_version% to %alias_version_update%
 	echo.
 	del /s /q %tmp%\alias_version_update.txt
