@@ -1,6 +1,5 @@
 @echo off
-	set current_version=2.04
-	set walls=%systemdrive%\Walls
+	set current_version=2.05
 	if "%1"=="update" ( goto :update_check ) else ( goto :firstrun )
 :firstrun
 	if "%alias_firstrun%"=="complete" ( goto :start ) else ( goto :setup )
@@ -87,53 +86,54 @@ echo.
 	doskey
 	goto :cleanup
 :help
-	echo.
-	echo ALIAS
-	echo		-H --HELP OR /?
-	echo.
-	echo	Creates a custom command, or shorthand nickname for available commands.
-	echo	Similar to the bash command "alias" with a notable exception...
-	echo	Single quotes around the custom command are not required.
-	echo		Example:
-	echo			ALIAS ls='ls -A --color=always'
-	echo		Becomes...
-	echo			ALIAS ls=ls -A --color=always $^*
-	echo.
-	echo.
-	echo	Usage:
-	echo		ALIAS [alias]=[command]
-	echo			[alias]		 specifies a name for an alias you create
-	echo			[command]		   specifies the triggered command(s)
-	echo.
-	echo.
-	echo	To clear an alias, make its definition blank
-	echo		Example:
-	echo			ALIAS ls=
-	echo.
-	echo.
-	echo	Special alias definitions:
-	echo		$t			  Command separator.
-	echo		$1-$9		   Arguments for batch variables
-	echo		$*			  Arguments for batch parameters
-	echo			Example:
-	echo.			   ALIAS google=start "" /b "http://www.google.com/search?q
-=$*"
-	echo.
-	echo	Alias save files are stored in:
-	echo		%userprofile%\.aliases
-	echo.
-	echo	Alias configuration args
-	echo		Example:
-	echo			ALIAS set [option]
-	echo		Options include:
-	echo.		   autostart [true|false]
-	echo.
-	echo	-H --HELP OR /?
-	echo		Will bring up this help
-	echo.
-	echo		NOTE: If you want args passed as input to your alias, include a $* or $1
--$9
-	echo.
+echo.                                                                                                                               
+echo  ALIAS                                                                                                                           
+echo             -H --HELP OR /?                                                                                                      
+echo.                                                                                                                                 
+echo     Creates a custom command, or shorthand nickname for available commandsecho                                                       
+echo     Similar to the bash command "alias" with a notable exceptionecho echo echo                                                               
+echo     Single quotes around the custom command are not required                                                                     
+echo             Example:                                                                                                             
+echo                     ALIAS ls='ls -A --color=always'                                                                              
+echo             Becomesecho echo echo                                                                                                            
+echo                     ALIAS ls=ls -A --color=always $^*                                                                            
+echo.                                                                                                                                 
+echo.                                                                                                                                 
+echo     Usage:                                                                                                                       
+echo             ALIAS [alias]=[command]                                                                                              
+echo                     [alias]          specifies a name for an alias you create                                                    
+echo                     [command]                  specifies the triggered command(s)                                                
+echo.                                                                                                                                 
+echo.                                                                                                                                 
+echo     To clear an alias, make its definition blank                                                                                 
+echo             Example:                                                                                                             
+echo                     ALIAS ls=                                                                                                    
+echo                                                                                                                                 
+echo.                                                                                                                                 
+echo     Special alias definitions:                                                                                                   
+echo             $t                        Command separator                                                                  
+echo             $1-$9              Arguments for batch variables                                                                     
+echo             $*                        Arguments for batch parameters                                                             
+echo                     Example:                                                                                                     
+echo                       ALIAS google=start "" /b "http://wwwecho googleecho com/search?q=$*"                                                                                                                                         
+echo.                                                                                                                                 
+echo     Alias save files for users are stored in:                                                                                              
+echo             %userprofile%\echo aliases
+echo     Alias save files for machine are stored in:                                                                                              
+echo             %programdata%\echo aliases                                                                                               
+echo.                                                                                                                                 
+echo     Alias DEBUGGING                                                                                                     
+echo                     ALIAS --debug [option]                                                                                           
+echo             Example:                                                                                                             
+echo                     ALIAS --debug ls=dir /b $*                                                                                           
+echo.                                                                                             
+echo.                                                                                                                                 
+echo     -H --HELP OR /?                                                                                                              
+echo             Will bring up this help                                                                                              
+echo.                                                                                                                                 
+echo             NOTE: If you want args passed as input to your alias, include a $* or $1-$9                                                                                                                                          
+echo.        
+echo.
 goto :save
 :init_exec_alias
 	doskey %arg1%=%arg2% %arg3% %arg4% %arg5% %arg6% %arg7% %arg8%
