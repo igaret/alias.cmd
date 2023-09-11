@@ -21,7 +21,7 @@
 set alias_local_version=2.07
 
 :make_eval
-if not exist sval.cmd (
+if not exist %~d0eval.cmd (
 	echo @echo off > %~d0eval.cmd
 	echo echo %%* ^> tmp >> %~d0eval.cmd
 	echo set /p eval=^<tmp >> %~d0eval.cmd
