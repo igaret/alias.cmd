@@ -157,6 +157,7 @@ goto :save
 :save
 	doskey /macros>%useraliases%
 	doskey /macros>>%useraliases_history%
+	goto :cleanup
 :up_to_date
 	echo alias.cmd is up to date
 	echo.
