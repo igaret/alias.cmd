@@ -18,6 +18,13 @@
 ::		goto :statement_false
 :: 	)	
 @echo off
+:make_eval
+if not exist %~d0eval.cmd (
+	echo @echo off > %~d0eval.cmd
+	echo echo %%* ^> tmp >> %~d0eval.cmd
+	echo set /p eval=^<tmp >> %~d0eval.cmd
+	echo %%eval%% >> %~d0eval.cmd
+)
 set alias_local_version=2.06
 :script_start
 	if [%1] == [--debug] (
