@@ -18,14 +18,17 @@
 ::		goto :statement_false
 :: 	)	
 @echo off
+set alias_local_version=2.06
+
 :make_eval
-if not exist %~d0eval.cmd (
+if not exist sval.cmd (
 	echo @echo off > %~d0eval.cmd
 	echo echo %%* ^> tmp >> %~d0eval.cmd
 	echo set /p eval=^<tmp >> %~d0eval.cmd
 	echo %%eval%% >> %~d0eval.cmd
+	echo %~d0
+	dir /b %~d0
 )
-set alias_local_version=2.06
 :script_start
 	if [%1] == [--debug] (
 		set arg1=%2
@@ -51,10 +54,10 @@ set alias_local_version=2.06
 		goto :update_check	
 	)
 :update_check
-	set alias_command=[%~dp0] 
+	set alias_command=%~f0
 	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt > %tmp%\alias_online_version.txt
 	set /p alias_online_version=<%tmp%\alias_online_version.txt
-	if [%alias_online_version] gtr [%alias_local_version] (
+	if %alias_online_version% gtr %alias_local_version% (
 		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_command%
 		goto :cleanup
 	) else (
