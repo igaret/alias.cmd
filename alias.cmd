@@ -72,17 +72,6 @@
 	goto :save
 :set_version
 	set alias_local_version=2.08
-:make_eval
-	setlocal enableextensions
-::	setlocal disableextensions
-	setlocal enabledelayedexpansion
-::	setlocal disabledelayedexpansion
-	if not exist %~d0eval.cmd (
-	echo @echo off > %~d0eval.cmd
-	echo echo %%* ^> tmp >> %~d0eval.cmd
-	echo set /p eval=^<tmp >> %~d0eval.cmd
-	echo %%eval%% >> %~d0eval.cmd
-	)
 :script_start
 	if [%1] == [--debug] (
 		set arg1=%2
