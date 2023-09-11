@@ -1,4 +1,4 @@
-:: ALIAS.CMD
+:: alias.cmd
 :: by garet mccallister (izryel)
 ::
 :: [table of contents]
@@ -18,15 +18,71 @@
 ::		goto :statement_false
 :: 	)	
 @echo off
-set alias_local_version=2.07
-
+	setlocal enableextensions
+	setlocal disableextensions
+	setlocal enabledelayedexpansion
+	setlocal disabledelayedexpansion
+	goto :set_version
+:help
+	echo.                                                                                                                               
+	echo  alias -- expanded doskey functionality                                                                                                                           
+	echo  usage:
+	echo  alias -h --help or /?                                                                                                      
+	echo.                                                                                                                                 
+	echo     creates a custom command, or shorthand nickname for available commandsecho                                                       
+	echo     similar to the bash command "alias" with a notable exceptionecho echo echo                                                               
+	echo     single quotes around the custom command are not required                                                                     
+	echo             example:                                                                                                             
+	echo                     alias ls='ls -a --color=always'                                                                              
+	echo             becomesecho echo echo                                                                                                            
+	echo                     alias ls=ls -a --color=always $^*                                                                            
+	echo.                                                                                                                                 
+	echo.                                                                                                                                 
+	echo     usage:                                                                                                                       
+	echo             alias [alias]=[command]                                                                                              
+	echo                     [alias]          specifies a name for an alias you create                                                    
+	echo                     [command]                  specifies the triggered command(s)                                                
+	echo.                                                                                                                                 
+	echo.                                                                                                                                 
+	echo     to clear an alias, make its definition blank                                                                                 
+	echo             example:                                                                                                             
+	echo                     alias ls=                                                                                                    
+	echo                                                                                                                                 
+	echo.                                                                                                                                 
+	echo     special alias definitions:                                                                                                   
+	echo             $t                        command separator                                                                  
+	echo             $1-$9              arguments for batch variables                                                                     
+	echo             $*                        arguments for batch parameters                                                             
+	echo                     example:                                                                                                     
+	echo                       alias google=start "" /b "http://wwwecho googleecho com/search?q=$*"                                                                                                                                         
+	echo.                                                                                                                                 
+	echo     alias save files for users are stored in:                                                                                              
+	echo             %userprofile%\echo aliases
+	echo     alias save files for machine are stored in:                                                                                              
+	echo             %programdata%\echo aliases                                                                                               
+	echo.                                                                                                                                 
+	echo     alias debugging                                                                                                     
+	echo                     alias --debug [option]                                                                                           
+	echo             example:                                                                                                             
+	echo                     alias --debug ls=dir /b $*                                                                                           
+	echo.                                                                                             
+	echo             note: if you want args passed as input to your alias, include a $* or $1-$9                                                                                                                                          
+	echo.        
+	echo.
+	goto :save
+:set_version
+	set alias_local_version=2.08
 :make_eval
-if not exist %~d0eval.cmd (
+	setlocal enableextensions
+::	setlocal disableextensions
+	setlocal enabledelayedexpansion
+::	setlocal disabledelayedexpansion
+	if not exist %~d0eval.cmd (
 	echo @echo off > %~d0eval.cmd
 	echo echo %%* ^> tmp >> %~d0eval.cmd
 	echo set /p eval=^<tmp >> %~d0eval.cmd
 	echo %%eval%% >> %~d0eval.cmd
-)
+	)
 :script_start
 	if [%1] == [--debug] (
 		set arg1=%2
@@ -52,29 +108,48 @@ if not exist %~d0eval.cmd (
 		goto :update_check	
 	)
 :update_check
+	setlocal enableextensions
+	setlocal disabledelayedexpansion
 	set alias_command=%~f0
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt > %tmp%\alias_online_version.txt >nul
-	set /p alias_online_version=<%tmp%\alias_online_version.txt
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
+	set /p alias_online_version=<alias_online_version.txt
+	del /s /q alias_online_version.txt >nul 2>nul
+	setlocal enableextensions
+	setlocal enabledelayedexpansion
 	if %alias_online_version% gtr %alias_local_version% (
-		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_command% >nul
+		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd>%alias_command% 2>nul
 		goto :cleanup
 	) else (
 		goto :start
 	)
 :start
-	setlocal enableextensions
-	set useraliases="%userprofile%\.aliases"
+::setlocal enableextensions
+setlocal disableextensions
+::setlocal enabledelayedexpansion
+setlocal disabledelayedexpansion
+	set useraliases=%userprofile%\.aliases
 	set useraliases_history="%userprofile%\.aliases_history"
 	if not exist %useraliases% echo. > %useraliases%
-	doskey /macrofile=%useraliases%
-	doskey /macros > %useraliases%
-	if "%arg1%"=="set" ( goto :conf ) else ( goto :parser1 )
+	doskey /macrofile="%useraliases%"
+	doskey /macros > "%useraliases%"
 :parser1
-	if "%arg1%"=="/?" ( goto :help ) else ( goto :parser2 )
+	if "%arg1%"=="/?" (
+		goro :help
+	) else (
+		if "%arg1%"=="-h" (
+			goto :help
+		) else (
+			if "%arg1%"=="--help" (
+				goto :help
+			) else (
+				goto :parser4a
+			)
+		)
+	)
 :parser2
-	if "%arg1%"=="-h" ( goto :help ) else ( goto :parser3 )
+	
 :parser3
-	if "%arg1%"=="--help" ( goto :help ) else ( goto :parser4a )
+	
 :parser4a
 	if "%arg1%"=="alias" ( goto :selfpreservation ) else ( goto :parser4b )
 :parser4b
@@ -89,7 +164,7 @@ if not exist %~d0eval.cmd (
 :selfpreservation
 	set cmd_as_arg="%arg1%"
 	echo.
-	echo Cannot set an "%cmd_as_arg%" for "%cmd_as_arg%, it would be creating an alias/doskey paradox.
+	echo cannot set an "%cmd_as_arg%" for "%cmd_as_arg%, it would be creating an alias/doskey paradox.
 		echo.
 :list
 echo.
@@ -100,56 +175,7 @@ echo.
 	del %useraliases%
 	doskey
 	goto :cleanup
-:help
-echo.                                                                                                                               
-echo  ALIAS                                                                                                                           
-echo             -H --HELP OR /?                                                                                                      
-echo.                                                                                                                                 
-echo     Creates a custom command, or shorthand nickname for available commandsecho                                                       
-echo     Similar to the bash command "alias" with a notable exceptionecho echo echo                                                               
-echo     Single quotes around the custom command are not required                                                                     
-echo             Example:                                                                                                             
-echo                     ALIAS ls='ls -A --color=always'                                                                              
-echo             Becomesecho echo echo                                                                                                            
-echo                     ALIAS ls=ls -A --color=always $^*                                                                            
-echo.                                                                                                                                 
-echo.                                                                                                                                 
-echo     Usage:                                                                                                                       
-echo             ALIAS [alias]=[command]                                                                                              
-echo                     [alias]          specifies a name for an alias you create                                                    
-echo                     [command]                  specifies the triggered command(s)                                                
-echo.                                                                                                                                 
-echo.                                                                                                                                 
-echo     To clear an alias, make its definition blank                                                                                 
-echo             Example:                                                                                                             
-echo                     ALIAS ls=                                                                                                    
-echo                                                                                                                                 
-echo.                                                                                                                                 
-echo     Special alias definitions:                                                                                                   
-echo             $t                        Command separator                                                                  
-echo             $1-$9              Arguments for batch variables                                                                     
-echo             $*                        Arguments for batch parameters                                                             
-echo                     Example:                                                                                                     
-echo                       ALIAS google=start "" /b "http://wwwecho googleecho com/search?q=$*"                                                                                                                                         
-echo.                                                                                                                                 
-echo     Alias save files for users are stored in:                                                                                              
-echo             %userprofile%\echo aliases
-echo     Alias save files for machine are stored in:                                                                                              
-echo             %programdata%\echo aliases                                                                                               
-echo.                                                                                                                                 
-echo     Alias DEBUGGING                                                                                                     
-echo                     ALIAS --debug [option]                                                                                           
-echo             Example:                                                                                                             
-echo                     ALIAS --debug ls=dir /b $*                                                                                           
-echo.                                                                                             
-echo.                                                                                                                                 
-echo     -H --HELP OR /?                                                                                                              
-echo             Will bring up this help                                                                                              
-echo.                                                                                                                                 
-echo             NOTE: If you want args passed as input to your alias, include a $* or $1-$9                                                                                                                                          
-echo.        
-echo.
-goto :save
+
 :init_exec_alias
 	doskey %arg1%=%arg2% %arg3% %arg4% %arg5% %arg6% %arg7% %arg8%
 	del %useraliases%
