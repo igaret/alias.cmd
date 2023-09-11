@@ -1,52 +1,59 @@
+:: ALIAS.CMD
+:: by garet mccallister (izryel)
+::
+:: [table of contents]
+:: 	script_start
+::		(determine if debugging or not)
+::	
+:: 	
+:: notes:
+:: [if else statements template]
+::	if "%arg"=="foobar" (
+::		cmd example
+::		cmd arg example
+::		goto :statement_true
+::	) else (
+::		cmd example
+::		cmd arg example
+::		goto :statement_false
+:: 	)	
 @echo off
-	set current_version=2.05
-	if "%1"=="update" ( goto :update_check ) else ( goto :firstrun )
-:firstrun
-	if "%alias_firstrun%"=="complete" ( goto :start ) else ( goto :setup )
-:setup
-	setx walls "%SystemDrive%\Walls" /m >nul
-	if not exist %walls% ( goto :create_walls ) else ( goto :start )
-:create_walls
-	mkdir %walls%
-	setx alias_firstrun "complete" /m >nul
-	setx PATH "%PATH%;%walls%" /m >nul
-	goto :end
+set alias_local_version=2.06
+:script_start
+	if [%1] == [--debug] (
+		set arg1=%2
+		set arg2=%3
+		set arg3=%4
+		set arg4=%5
+		set arg5=%6
+		set arg6=%7
+		set arg7=%8
+		set arg8=%9
+		@echo on
+		goto :update_check
+	) else (
+		set arg1=%1
+		set arg2=%2
+		set arg3=%3
+		set arg4=%4
+		set arg5=%5
+		set arg6=%6
+		set arg7=%7
+		set arg8=%8
+		@echo off
+		goto :update_check	
+	)
 :update_check
-	set update_url_check=https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt
-	curl %update_url_check% -o %tmp%\alias_version_update.txt >nul
-	set /p alias_version_update=<%tmp%\alias_version_update.txt >nul
-	if [%alias_version_update%] gtr [%current_version%] ( goto :update_continue ) else ( goto :up_to_date )
-:update_continue
-	set update_url_src=https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd
-	curl %update_url_src% -o %walls%\alias.cmd >nul
-	echo alias updated from %current_version% to %alias_version_update%
-	echo.
-	del /s /q %tmp%\alias_version_update.txt
-	goto :cleanup
+	set alias_command=[%~dp0] 
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt > %tmp%\alias_online_version.txt
+	set /p alias_online_version=<%tmp%\alias_online_version.txt
+	if [%alias_online_version] gtr [%alias_local_version] (
+		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_command%
+		goto :cleanup
+	) else (
+		goto :start
+	)
 :start
-	if [%1] == [--debug] ( goto :debug_exec ) else ( goto :exec )
-:debug_exec
-	set arg1=%2
-	set arg2=%3
-	set arg3=%4
-	set arg4=%5
-	set arg5=%6
-	set arg6=%7
-	set arg7=%8
-	set arg8=%9
-@echo on
-	goto :init
-:exec
-	set arg1=%1
-	set arg2=%2
-	set arg3=%3
-	set arg4=%4
-	set arg5=%5
-	set arg6=%6
-	set arg7=%7
-	set arg8=%8
-@echo off
-:init
 	setlocal enableextensions
 	set useraliases="%userprofile%\.aliases"
 	set useraliases_history="%userprofile%\.aliases_history"
