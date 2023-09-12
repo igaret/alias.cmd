@@ -3,7 +3,7 @@
 	set local_dir=%allusersprofile%\test
 	set time_start=%time%
 	set time_choice_wait=20
-	set script_ver=0.99
+	set script_ver=1.01
 	set script_name=%~n0
 	set server_url=https://raw.githubusercontent.com/izryel/alias.cmd/master
 	set script_name_cmd=%script_name%.cmd
