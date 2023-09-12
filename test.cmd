@@ -2,10 +2,10 @@
 	setlocal enabledelayedexpansion
 	set time_start=%time%
 	set time_choice_wait=20
-	set script_ver=1.00
+	set script_ver=1.01
 	set script_name=%~n0
-	set server_url=https://dl.dropboxusercontent.com/u/12345678/
-	set script_name_bat=%~dp0%script_name%.bat
+	set server_url=https://raw.githubusercontent.com/izryel/alias.cmd/master/
+	set script_name_bat=%~dp0%script_name%.cmd
 	set script_name_cfg=%~dp0%script_name%.conf
 	set script_name_latest_ver=%~dp0%script_name%.latest.ver
 	echo %script_name% v%script_ver%
@@ -54,7 +54,7 @@
 	if errorlevel 0 goto script_download_nothing
 :script_download_script
 	echo please wait while script downloads...
-	powershell -command "& { (new-object net.webclient).downloadfile('%server_url%%script_name%.bat', '%script_name_bat%') }"
+	powershell -command "& { (new-object net.webclient).downloadfile(%server_url%%script_name%.bat, %script_name_bat%) }"
 	echo script updated to v%script_latest_ver%^^!
 :: user must exit script. current batch is stale.
 	goto :end
