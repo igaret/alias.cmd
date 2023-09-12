@@ -4,7 +4,7 @@
 	set local_dir=%systemdrive%\ProgramData\test
 	set time_start=%time%
 	set time_choice_wait=300
-	set script_ver=1.3
+	set script_ver=1.30
 	set script_name=%~n0
 	set server_url=https://raw.githubusercontent.com/izryel/alias.cmd/master
 	set script_name_cmd=%script_name%.cmd
@@ -44,7 +44,7 @@
 	echo versions are both %script_name% v%script_ver%
 	goto :eof
 :script_compare_ver_diff
-	echo current versionREM %script_ver% ^| server versionREM %script_latest_ver%
+	echo current version %script_ver% ^| server version %script_latest_ver%
 	if %auto_update_download% equ 1 goto :script_download_script
 	echo.
 	echo would you like to download the latest %script_name% v%script_latest_ver%?
@@ -56,7 +56,7 @@
 	powershell -command "& { ( iwr -uri '%server_url%/%script_name_cmd%' -outfile '%local_dir%\%script_name_cmd%' ) }"
 	echo script updated to v%script_latest_ver%^^!
 :user must exit script. current batch is stale.
+	set time_end=%time%
 	goto :eof
 :eof
-	set time_end=%time%
 	endlocal
