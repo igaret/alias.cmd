@@ -32,7 +32,7 @@
 	goto ::eof
 :script_compare_ver
 	echo please wait while script versions are compared...
-	powershell -command "& { (new-object net.webclient).downloadfile('%server_url%/%script_name%.current.ver', '%script_name_latest_ver%') }"
+	powershell -command "& { (new-object net.webclient).downloadfile('%server_url%/%script_name%.current.ver', '%local_dir%\%script_name_latest_ver%') }"
 	if not exist "%script_name_latest_ver%" goto :end
 	set /p script_latest_ver= < "%script_name_latest_ver%"
 	if %script_ver% equ %script_latest_ver% call :script_compare_ver_same
@@ -51,11 +51,12 @@
 	if errorlevel 1 ( goto :script_download_script ) else ( goto :eof )
 :script_download_script
 	echo please wait while script downloads...
-	powershell -command "& { (new-object net.webclient).downloadfile('%server_url%/%script_name_cmd%', '%local_dir%/%script_name_cmd%') }"
+	powershell -command "& { (new-object net.webclient).downloadfile('%server_url%/%script_name_cmd%', '%local_dir%\%script_name_cmd%') }"
 	echo script updated to v%script_latest_ver%^^!
 :: user must exit script. current batch is stale.
-	goto ::end
+	goto :end
 :script_download_nothing
-	goto ::eof
+	goto :eof
 :end
 	set time_end=%time%
+:eof
