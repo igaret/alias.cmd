@@ -1,14 +1,14 @@
 ::@echo off
 	setlocal enabledelayedexpansion
+	set local_dir=%allusersprofile%\test
 	set time_start=%time%
 	set time_choice_wait=20
-	set script_ver=0.99
+	set script_ver=1.01
 	set script_name=%~n0
 	set server_url=https://raw.githubusercontent.com/izryel/alias.cmd/master
 	set script_name_cmd=%script_name%.cmd
 	set script_name_cfg=%script_name%.conf
 	set script_name_latest_ver=%script_name%.latest.ver
-	set local_dir=%allusersprofile%\test
 	echo %script_name% v%script_ver%
 	echo %script_ver% > %script_name%.current.ver
 	if not exist "%script_name_cfg%" call :script_missing_cfg
@@ -24,10 +24,10 @@
 	goto :end
 :script_missing_cfg
 	echo creating new %script_name%.conf file...
-	echo __deploy_mode=0 > "%script_name_cfg%"
-	echo repository_base_url=%server_url% >> "%script_name_cfg%"
-	echo auto_update_compare=1>> "%script_name_cfg%"
-	echo auto_update_download=1 >> "%script_name_cfg%"
+	echo __deploy_mode=0 > "%local_dir%\%script_name_cfg%"
+	echo repository_base_url=%server_url% >> "%local_dir%\%script_name_cfg%"
+	echo auto_update_compare=1>> "%local_dir%\%script_name_cfg%"
+	echo auto_update_download=1 >> "%local_dir%\%script_name_cfg%"
 	echo local_dir=%allusersprofile%\test >> "%script_name_cfg%"
 	goto :eof
 :script_compare_ver
