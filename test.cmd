@@ -1,9 +1,9 @@
-::@echo off
+@echo off
 	setlocal enabledelayedexpansion
 	set local_dir=%allusersprofile%\test
 	set time_start=%time%
 	set time_choice_wait=20
-	set script_ver=1.01
+	set script_ver=0.99
 	set script_name=%~n0
 	set server_url=https://raw.githubusercontent.com/izryel/alias.cmd/master
 	set script_name_cmd=%script_name%.cmd
@@ -21,7 +21,7 @@
 	echo waiting for content...
 :: === edit above this line ==
 :: =======================================
-	goto :end
+	goto :eof
 :script_missing_cfg
 	echo creating new %script_name%.conf file...
 	echo __deploy_mode=0 > "%local_dir%\%script_name_cfg%"
@@ -32,8 +32,8 @@
 	goto :eof
 :script_compare_ver
 	echo please wait while script versions are compared...
-	powershell -command "& {( iwr -uri '%server_url%/%script_name%.current.ver' -outfile '%local_dir%\%script_name_latest_ver%') }"
-	if not exist "%script_name_latest_ver%" goto :end
+	powershell -command "& {( iwr -uri '%server_url%/%script_name%.current.ver' -outfile '%script_name_latest_ver%') }"
+	if not exist "%script_name_latest_ver%" goto :eof
 	set /p script_latest_ver= < "%script_name_latest_ver%"
 	if %script_ver% equ %script_latest_ver% call :script_compare_ver_same
 	if %script_ver% neq %script_latest_ver% call :script_compare_ver_diff
@@ -51,7 +51,7 @@
 	if errorlevel 1 ( goto :script_download_script ) else ( goto :eof )
 :script_download_script
 	echo please wait while script downloads...
-	powershell -command "& { (iwr -uri '%server_url%/%script_name_cmd%' -outfile '%local_dir%\%script_name_cmd%') }"
+	powershell -command "& { (iwr -uri '%server_url%/%script_name_cmd%' -outfile '%script_name_cmd%') }"
 	echo script updated to v%script_latest_ver%^^!
 :: user must exit script. current batch is stale.
 	goto :eof
