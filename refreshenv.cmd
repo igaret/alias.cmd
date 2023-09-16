@@ -1,7 +1,7 @@
 :bof
 @echo off
-  set /p dummy="getting environment... "
-  goto init
+set /p dummy="getting environment... "
+goto init
 :setfromreg
     "%windir%\system32\reg" query "%~1" /v "%~2" > "%temp%\_envset.tmp" 2>nul
     for /f "usebackq skip=2 tokens=2,*" %%a in ("%temp%\_envset.tmp") do (
@@ -25,7 +25,6 @@
     set path=%%path_hklm%%;%%path_hkcu%% >> "%temp%\_env.cmd"
     del /f /q "%temp%\_envset.tmp" 2>nul
     del /f /q "%temp%\_envget.tmp" 2>nul
-    :: set these variables
     call "%temp%\_env.cmd"
     set /p dummy="done"
     echo .
