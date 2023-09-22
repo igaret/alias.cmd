@@ -170,7 +170,8 @@ endlocal
 	goto :eof
 :install
 	mkdir %alias_dir%
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
 	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
 	goto :eof
 :end
