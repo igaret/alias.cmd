@@ -3,6 +3,13 @@
 @echo off
 call :env
 call :set_version
+:test_if_setup
+	if exist "%alias_dir" (
+		goto :script_start
+	) else (
+		call :install
+		goto :script_start
+	)
 :script_start
 	if [%1] == [--debug] (
 		@echo on
@@ -151,11 +158,7 @@ endlocal
 		rem // apply change to the current process
 		for %%a in ("%%j;%~1") do path %%~a
 	)
-	rem // use setx to set a temporary throwaway value to trigger a wm_settingchange
-	rem // applies change to new console windows without requiring a reboot
 	(setx /m foo bar & reg delete "%env%" /f /v foo) >nul 2>nul
-	color 4e
-	echo warning: %%path%% has changed.  reopen the console to inherit the changes.
 	goto :eof
 :set_version
 	set /p alias_local_version=<%alias_dir%\current_version.txt
@@ -164,5 +167,11 @@ endlocal
 	echo.                                                                                                                               
 	echo  alias -- expanded doskey functionality                                                                                                                           
 	echo.
+	goto :eof
+:install
+	mkdir %alias_dir%
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
+	goto :eof
 :end
 :eof
