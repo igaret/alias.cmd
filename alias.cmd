@@ -1,7 +1,7 @@
 :: alias.cmd
 :: by garet mccallister (g4r3t-mcc4ll1st3r)
 @echo off
-call :env
+call :set_env
 call :alias_setversion
 :test_if_setup
 	if exist "%alias_dir%" (
@@ -131,7 +131,7 @@ endlocal
 	set arg7=""
 	set arg8=""
 	goto :eof
-:set-env
+:set_env
 	set alias_dir=%allusersprofile%\alias
 	goto :eof
 :refreshenv
