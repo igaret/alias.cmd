@@ -2,15 +2,15 @@
 :: by garet mccallister (g4r3t-mcc4ll1st3r)
 @echo off
 call :env
-call :set_version
+call :alias_setversion
 :test_if_setup
-	if exist "%alias_dir" (
-		goto :script_start
+	if exist "%alias_dir%" (
+		goto :debug_parser
 	) else (
-		call :install
-		goto :script_start
+		call :install_alias
+		goto :debug_parser
 	)
-:script_start
+:debug_parser
 	if [%1] == [--debug] (
 		@echo on
 		set arg1=%2
@@ -56,74 +56,70 @@ endlocal
 	if not exist %useraliases% echo. > %useraliases%
 	doskey /macrofile="%useraliases%"
 	doskey /macros > "%useraliases%"
-:parser1
+:alias_arg_parser_1
 	if "%arg1%"=="/?" (
-		goro :help
+		goro :alias_help
 	) else (
 		if "%arg1%"=="-?" (
-			goto :help
+			goto :alias_help
 		) else (
 			if "%arg1%"=="?" (
-				goto :help
+				goto :alias_help
 			) else (
 				if "%arg1%"=="-h" (
-					goto :help
+					goto :alias_help
 				) else (
 					if "%arg1%"=="--help" (
-						goto :help
+						goto :alias_help
 					) else (
 						if "%arg1%"=="help" (
-							goto :help
+							goto :alias_help
 						) else (
-							goto :parser2
+							goto :alias_arg_parser_2a
 						)
 					)
 				)
 			)
 		)
 	)
-:parser2
-	endlocal
-	goto :parser4a
-:parser3
-:parser4a
-	if "%arg1%"=="alias" ( goto :selfpreservation ) else ( goto :parser4b )
-:parser4b
-	if "%arg1%"=="doskey" ( goto :selfpreservation ) else ( goto :parser5a)
-:parser5a
-	if "%arg1%"=="update" ( goto :update ) else ( goto :parser5b )
-:parser5b
-	if "%arg1%"=="reset" ( goto :reset ) else ( goto :parser6 )
-:parser6
-	if "%arg1%"=="" ( goto :list ) else ( goto :init_exec_alias )
-	goto :save
-:selfpreservation
+:alias_arg_parser_2a
+	if "%arg1%"=="alias" ( goto :doskey_selfpreservation ) else ( goto :alias_arg_parser_2b )
+:alias_arg_parser_2b
+	if "%arg1%"=="doskey" ( goto :doskey_selfpreservation ) else ( goto :alias_arg_parser_3)
+:alias_arg_parser_3
+	if "%arg1%"=="update" ( goto :update ) else ( goto :alias_arg_parser_4 )
+:alias_arg_parser_4
+	if "%arg1%"=="reset" ( goto :reset_aliases ) else ( goto :alias_arg_parser_5 )
+:alias_arg_parser_5
+	if "%arg1%"=="" ( goto :alias_output_list ) else ( goto :alias_init )
+	goto :alias_save
+:doskey_selfpreservation
 	set cmd_as_arg="%arg1%"
 	echo.
 	echo cannot set an "%cmd_as_arg%" for "%cmd_as_arg%, it would be creating an alias/doskey paradox.
 	echo.
-	goto :cleanup
-:list
+	goto :alias_cleanup
+:alias_output_list
 	echo.
 	doskey /macros
 	echo.
-	goto :save
-:reset
+	goto :alias_save
+:reset_aliases
 	del %useraliases%
 	doskey
-	goto :cleanup
-:init_exec_alias
+	goto :alias_cleanup
+:alias_init
 	doskey %arg1%=%arg2% %arg3% %arg4% %arg5% %arg6% %arg7% %arg8%
 	del %useraliases%
-	goto :save
-:save
+	goto :alias_save
+:alias_save
 	doskey /macros>%useraliases%
 	doskey /macros>>%useraliases_history%
-	goto :cleanup
-:up_to_date
+	goto :alias_cleanup
+:alias_uptodate
 	echo alias.cmd is up to date
 	echo.
-:cleanup
+:alias_cleanup
 	set useraliases=""
 	set cmd_as_arg=""
 	set arg1=""
@@ -135,8 +131,10 @@ endlocal
 	set arg7=""
 	set arg8=""
 	goto :eof
-:env
+:set-env
 	set alias_dir=%allusersprofile%\alias
+	goto :eof
+:refreshenv
 	setlocal enabledelayedexpansion
 	for %%i in ("%alias_dir%") do pushd "%%~i" 2>nul && (set "new=!alias_dir!" && popd) || goto usage
 	for %%i in ("%path:;=";"%") do pushd "%%~i" 2>nul && (
@@ -160,21 +158,21 @@ endlocal
 	)
 	(setx /m foo bar & reg delete "%env%" /f /v foo) >nul 2>nul
 	goto :eof
-:set_version	
+:alias_setversion	
 	set /p alias_local_version=<%alias_dir%\current_version.txt
 	goto :eof
-:help
+:alias_help
 	echo.                                                                                                                               
 	echo  alias -- expanded doskey functionality                                                                                                                           
 	echo.
 	goto :eof
-:install
-	mkdir %alias_dir%
+:install_alias
+	mkdir %alias_dir% 2>nul
 	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
 	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
 	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
 	setx PATH "%alias_dir%;%PATH%" /m
-	call :env
+	call :refreshenv
 	goto :eof
 :end
 :eof
