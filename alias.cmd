@@ -167,7 +167,7 @@ endlocal
 	echo.
 	goto :eof
 :install_alias
-	mkdir %alias_dir% 2>nul
+	mkdir %alias_dir% >nul 2>nul
 	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
 	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
 	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
