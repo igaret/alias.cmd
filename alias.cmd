@@ -1,5 +1,5 @@
 :: alias.cmd
-:: by garet mccallister (izryel)
+:: by garet mccallister (g4r3t-mcc4ll1st3r)
 @echo off
 call :env
 call :set_version
@@ -37,13 +37,13 @@ call :set_version
 		goto :update_check	
 	)
 :update_check
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
 	set /p alias_online_version=<alias_online_version.txt
 	del /s /q alias_online_version.txt >nul 2>nul
 	endlocal
 	if %alias_online_version% gtr %alias_local_version% (
-		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
-		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
+		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
+		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
 		echo %alias_online_version%>%alias_dir%\current_version.txt
 		goto :start
 	) else (
@@ -151,7 +151,7 @@ endlocal
 	endlocal
 	goto :eof
 :env-append_path <val>
-	set "env=hklm\system\currentcontrolset\control\session manager\environment"
+	set env="hklm\system\currentcontrolset\control\session manager\environment"
 	for /f "tokens=2*" %%i in ('reg query "%env%" /v path ^| findstr /i "\<path\>"') do (
 		rem // make addition persistent through reboots
 		reg add "%env%" /f /v path /t reg_expand_sz /d "%%j;%~1"
@@ -160,7 +160,7 @@ endlocal
 	)
 	(setx /m foo bar & reg delete "%env%" /f /v foo) >nul 2>nul
 	goto :eof
-:set_version
+:set_version	
 	set /p alias_local_version=<%alias_dir%\current_version.txt
 	goto :eof
 :help
@@ -170,9 +170,11 @@ endlocal
 	goto :eof
 :install
 	mkdir %alias_dir%
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
+	setx PATH "%alias_dir%;%PATH%" /m
+	call :env
 	goto :eof
 :end
 :eof
