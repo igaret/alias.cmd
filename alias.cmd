@@ -1,16 +1,6 @@
 :: alias.cmd
-:: by garet mccallister (izryel)
+:: by garet mccallister (g4r3t-mcc4ll1st3r/izryel)
 @echo off
-	set alias_dir="%allusersprofile%\alias"
-	set /p alias_local_version=<%alias_dir%\current_version.txt
-:test_if_setup
-	if exist %alias_dir%\ (
-		goto :script_start
-	) else (
-		call :install
-		goto :script_start
-	)
-:script_start
 	if [%1] == [--debug] (
 		@echo on
 		set arg1=%2
@@ -34,22 +24,43 @@
 		set arg8=%8
 		set arg9=%9
 		@echo off
-		goto :update_check	
+		goto :update_check
 	)
 :update_check
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
+	set alias_dir="%allusersprofile%\alias"
+	set /p alias_local_version=<%alias_dir%\current_version.txt
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
 	set /p alias_online_version=<alias_online_version.txt
 	del /s /q alias_online_version.txt >nul 2>nul
 	endlocal
 	if %alias_online_version% gtr %alias_local_version% (
-		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
-		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
+		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
+		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
 		echo %alias_online_version%>%alias_dir%\current_version.txt
-		goto :start
+		goto :continue
 	) else (
-		goto :start
+		goto :continue
 	)
-:start
+:continue
+	if [%1] == [-v] (
+		echo %alias_local_version%
+		goto :eof
+	) else (
+		if [%1] == [--version] (
+			echo %alias_local_version%
+			goto :eof
+		) else (
+			goto :test_if_setup
+		)
+	)
+:test_if_setup
+	if exist %alias_dir%\ (
+		goto :script_start
+	) else (
+		call :install
+		goto :script_start
+	)
+:script_start
 endlocal
 	set useraliases=%userprofile%\.aliases
 	set useraliases_history="%userprofile%\.aliases_history"
@@ -169,9 +180,9 @@ endlocal
 	goto :eof
 :install
 	mkdir %alias_dir% >nul 2>nul
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
-	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
 	goto :eof
 :end
 :eof
