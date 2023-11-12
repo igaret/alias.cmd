@@ -34,6 +34,7 @@
 	del /s /q alias_online_version.txt >nul 2>nul
 	endlocal
 	if %alias_online_version% gtr %alias_local_version% (
+		echo updating to %alias_online_version%
 		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
 		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
 		echo %alias_online_version%>%alias_dir%\current_version.txt
