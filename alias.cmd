@@ -1,16 +1,16 @@
 :: alias.cmd
-:: by garet mccallister (g4r3t-mcc4ll1st3r)
+:: by garet mccallister (izryel)
 @echo off
-call :set_env
-call :alias_setversion
+	set alias_dir="%allusersprofile%\alias"
+	set /p alias_local_version=<%alias_dir%\current_version.txt
 :test_if_setup
-	if exist "%alias_dir%" (
-		goto :debug_parser
+	if exist %alias_dir%\ (
+		goto :script_start
 	) else (
-		call :install_alias
-		goto :debug_parser
+		call :install
+		goto :script_start
 	)
-:debug_parser
+:script_start
 	if [%1] == [--debug] (
 		@echo on
 		set arg1=%2
@@ -37,13 +37,13 @@ call :alias_setversion
 		goto :update_check	
 	)
 :update_check
-	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
 	set /p alias_online_version=<alias_online_version.txt
 	del /s /q alias_online_version.txt >nul 2>nul
 	endlocal
 	if %alias_online_version% gtr %alias_local_version% (
-		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
-		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
+		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
+		curl https://raw.githubusercontent.com/izryel/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
 		echo %alias_online_version%>%alias_dir%\current_version.txt
 		goto :start
 	) else (
@@ -56,70 +56,74 @@ endlocal
 	if not exist %useraliases% echo. > %useraliases%
 	doskey /macrofile="%useraliases%"
 	doskey /macros > "%useraliases%"
-:alias_arg_parser_1
+:parser1
 	if "%arg1%"=="/?" (
-		goro :alias_help
+		goro :help
 	) else (
 		if "%arg1%"=="-?" (
-			goto :alias_help
+			goto :help
 		) else (
 			if "%arg1%"=="?" (
-				goto :alias_help
+				goto :help
 			) else (
 				if "%arg1%"=="-h" (
-					goto :alias_help
+					goto :help
 				) else (
 					if "%arg1%"=="--help" (
-						goto :alias_help
+						goto :help
 					) else (
 						if "%arg1%"=="help" (
-							goto :alias_help
+							goto :help
 						) else (
-							goto :alias_arg_parser_2a
+							goto :parser2
 						)
 					)
 				)
 			)
 		)
 	)
-:alias_arg_parser_2a
-	if "%arg1%"=="alias" ( goto :doskey_selfpreservation ) else ( goto :alias_arg_parser_2b )
-:alias_arg_parser_2b
-	if "%arg1%"=="doskey" ( goto :doskey_selfpreservation ) else ( goto :alias_arg_parser_3)
-:alias_arg_parser_3
-	if "%arg1%"=="update" ( goto :update ) else ( goto :alias_arg_parser_4 )
-:alias_arg_parser_4
-	if "%arg1%"=="reset" ( goto :reset_aliases ) else ( goto :alias_arg_parser_5 )
-:alias_arg_parser_5
-	if "%arg1%"=="" ( goto :alias_output_list ) else ( goto :alias_init )
-	goto :alias_save
-:doskey_selfpreservation
+:parser2
+	endlocal
+	goto :parser4a
+:parser3
+:parser4a
+	if "%arg1%"=="alias" ( goto :selfpreservation ) else ( goto :parser4b )
+:parser4b
+	if "%arg1%"=="doskey" ( goto :selfpreservation ) else ( goto :parser5a)
+:parser5a
+	if "%arg1%"=="update" ( goto :update ) else ( goto :parser5b )
+:parser5b
+	if "%arg1%"=="reset" ( goto :reset ) else ( goto :parser6 )
+:parser6
+	if "%arg1%"=="" ( goto :list ) else ( goto :init_exec_alias )
+	goto :save
+:selfpreservation
 	set cmd_as_arg="%arg1%"
 	echo.
 	echo cannot set an "%cmd_as_arg%" for "%cmd_as_arg%, it would be creating an alias/doskey paradox.
 	echo.
-	goto :alias_cleanup
-:alias_output_list
+	goto :cleanup
+:list
 	echo.
 	doskey /macros
 	echo.
-	goto :alias_save
-:reset_aliases
+	goto :save
+:reset
 	del %useraliases%
 	doskey
-	goto :alias_cleanup
-:alias_init
+	goto :cleanup
+:init_exec_alias
 	doskey %arg1%=%arg2% %arg3% %arg4% %arg5% %arg6% %arg7% %arg8%
 	del %useraliases%
-	goto :alias_save
-:alias_save
+	goto :save
+:save
 	doskey /macros>%useraliases%
 	doskey /macros>>%useraliases_history%
-	goto :alias_cleanup
-:alias_uptodate
+	goto :cleanup
+:up_to_date
 	echo alias.cmd is up to date
 	echo.
-:alias_cleanup
+:cleanup
 	set useraliases=""
 	set cmd_as_arg=""
 	set arg1=""
@@ -131,10 +135,7 @@ endlocal
 	set arg7=""
 	set arg8=""
 	goto :eof
-:set_env
-	set alias_dir=%allusersprofile%\alias
-	goto :eof
-:refreshenv
+:env
 	setlocal enabledelayedexpansion
 	for %%i in ("%alias_dir%") do pushd "%%~i" 2>nul && (set "new=!alias_dir!" && popd) || goto usage
 	for %%i in ("%path:;=";"%") do pushd "%%~i" 2>nul && (
@@ -149,7 +150,7 @@ endlocal
 	endlocal
 	goto :eof
 :env-append_path <val>
-	set env="hklm\system\currentcontrolset\control\session manager\environment"
+	set "env=hklm\system\currentcontrolset\control\session manager\environment"
 	for /f "tokens=2*" %%i in ('reg query "%env%" /v path ^| findstr /i "\<path\>"') do (
 		rem // make addition persistent through reboots
 		reg add "%env%" /f /v path /t reg_expand_sz /d "%%j;%~1"
@@ -158,21 +159,19 @@ endlocal
 	)
 	(setx /m foo bar & reg delete "%env%" /f /v foo) >nul 2>nul
 	goto :eof
-:alias_setversion	
-	set /p alias_local_version=<%alias_dir%\current_version.txt
+:set_version
+
 	goto :eof
-:alias_help
+:help
 	echo.                                                                                                                               
 	echo  alias -- expanded doskey functionality                                                                                                                           
 	echo.
 	goto :eof
-:install_alias
+:install
 	mkdir %alias_dir% >nul 2>nul
-	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
-	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
-	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
-	setx PATH "%alias_dir%;%PATH%" /m
-	call :refreshenv
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/alias.cmd > %alias_dir%\alias.cmd 2>nul
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/refreshenv.cmd > %alias_dir%\refreshenv.cmd 2>nul
+	curl https://raw.githubusercontent.com/izryel/alias.cmd/master/current_version.txt > %alias_dir%\current_version.txt 2>nul
 	goto :eof
 :end
 :eof
