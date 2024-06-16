@@ -4,9 +4,6 @@
 @echo off
 :start_of_script
 	set current_version=2.20
-	if [%1] == [--setup] (
-		doskey alias=%0 $*	
-	)
 	if [%1] == [--debug] (
 		@echo on
 		set arg1=%2
@@ -43,8 +40,13 @@
 	set /p alias_online_version=<alias_online_version.txt
 	del /s /q alias_online_version.txt >nul 2>nul
 	endlocal
+	if [%arg1%] == [--setup] (
+		doskey alias=
+		doskey alias=%alias_dir%\alias-%alias_online_version%.cmd $1	
+	)
 	if [%alias_online_version%] gtr [%alias_local_version%] (
 		echo updating to %alias_online_version%
+		doskey alias=	
 		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
 		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
 		echo %alias_online_version%>%alias_dir%\current_version.txt
