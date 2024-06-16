@@ -1,6 +1,12 @@
 :: alias.cmd
+:: version 2.18
 :: by garet mccallister (g4r3t-mcc4ll1st3r/izryel)
 @echo off
+:start_of_script
+	set current_version=2.18
+	if [%1] == [--setup] (
+		doskey alias=%0 $*	
+	)
 	if [%1] == [--debug] (
 		@echo on
 		set arg1=%2
@@ -27,15 +33,19 @@
 		goto :update_check
 	)
 :update_check
-	set alias_dir="%allusersprofile%\alias"
-	set /p alias_local_version=<%alias_dir%\current_version.txt
+	set alias_dir=%allusersprofile%\alias
+	if exist %alias_dir%\current_version.txt (
+		set /p alias_local_version=<%alias_dir%\current_version.txt 
+	) else (
+		set alias_local_version=%current_version%
+	)
 	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
 	set /p alias_online_version=<alias_online_version.txt
 	del /s /q alias_online_version.txt >nul 2>nul
 	endlocal
-	if %alias_online_version% gtr %alias_local_version% (
+	if [%alias_online_version%] gtr [%alias_local_version%] (
 		echo updating to %alias_online_version%
-		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
+		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias-%alias_online_version%.cmd>%alias_dir%\alias-%alias_online_version%.cmd 2>nul
 		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refreshenv.cmd>%alias_dir%\refeshenv.cmd 2>nul
 		echo %alias_online_version%>%alias_dir%\current_version.txt
 		goto :continue
@@ -44,11 +54,11 @@
 	)
 :continue
 	if [%1] == [-v] (
-		echo %alias_local_version%
+		echo %current_version%
 		goto :eof
 	) else (
 		if [%1] == [--version] (
-			echo %alias_local_version%
+			echo %current_version%
 			goto :eof
 		) else (
 			goto :test_if_setup
@@ -64,27 +74,27 @@
 :script_start
 endlocal
 	set useraliases=%userprofile%\.aliases
-	set useraliases_history="%userprofile%\.aliases_history"
+	set useraliases_history=%userprofile%\.aliases_history%
 	if not exist %useraliases% echo. > %useraliases%
-	doskey /macrofile="%useraliases%"
-	doskey /macros > "%useraliases%"
+	doskey /macrofile=%useraliases%
+	doskey /macros > %useraliases%
 :parser1
-	if "%arg1%"=="/?" (
-		goro :help
+	if [%arg1%] == [/?] (
+		goto :help
 	) else (
-		if "%arg1%"=="-?" (
+		if [%arg1%] == [-?] (
 			goto :help
 		) else (
-			if "%arg1%"=="?" (
+			if [%arg1%] == [?] (
 				goto :help
 			) else (
-				if "%arg1%"=="-h" (
+				if [%arg1%] == [-h] (
 					goto :help
 				) else (
-					if "%arg1%"=="--help" (
+					if [%arg1%] == [--help] (
 						goto :help
 					) else (
-						if "%arg1%"=="help" (
+						if [%arg1%] == [help] (
 							goto :help
 						) else (
 							goto :parser2
@@ -99,20 +109,20 @@ endlocal
 	goto :parser4a
 :parser3
 :parser4a
-	if "%arg1%"=="alias" ( goto :selfpreservation ) else ( goto :parser4b )
+	if [%arg1%] == [alias] ( goto :selfpreservation ) else ( goto :parser4b )
 :parser4b
-	if "%arg1%"=="doskey" ( goto :selfpreservation ) else ( goto :parser5a)
+	if [%arg1%] == [doskey] ( goto :selfpreservation ) else ( goto :parser5a)
 :parser5a
-	if "%arg1%"=="update" ( goto :update ) else ( goto :parser5b )
+	if [%arg1%] == [update] ( goto :update ) else ( goto :parser5b )
 :parser5b
-	if "%arg1%"=="reset" ( goto :reset ) else ( goto :parser6 )
+	if [%arg1%] == [reset] ( goto :reset ) else ( goto :parser6 )
 :parser6
-	if "%arg1%"=="" ( goto :list ) else ( goto :init_exec_alias )
+	if [%arg1%] == [] ( goto :list ) else ( goto :init_exec_alias )
 	goto :save
 :selfpreservation
-	set cmd_as_arg="%arg1%"
+	set cmd_as_arg=%arg1%
 	echo.
-	echo cannot set an "%cmd_as_arg%" for "%cmd_as_arg%, it would be creating an alias/doskey paradox.
+	echo cannot set an %cmd_as_arg% for %cmd_as_arg%, it would be creating an alias/doskey paradox.
 	echo.
 	goto :cleanup
 :list
@@ -146,33 +156,13 @@ endlocal
 	set arg6=""
 	set arg7=""
 	set arg8=""
+	set current_version=""
 	goto :eof
 :env
-	setlocal enabledelayedexpansion
-	for %%i in ("%alias_dir%") do pushd "%%~i" 2>nul && (set "new=!alias_dir!" && popd) || goto usage
-	for %%i in ("%path:;=";"%") do pushd "%%~i" 2>nul && (
-		rem // delaying expansion of !new! prevents parentheses from breaking things
-		if /i "!new!"=="!alias_dir!" (
-			endlocal
-			goto :eof
-		)
-		popd
-	)
-	call :env-append_path "%new%"
-	endlocal
 	goto :eof
 :env-append_path <val>
-	set "env=hklm\system\currentcontrolset\control\session manager\environment"
-	for /f "tokens=2*" %%i in ('reg query "%env%" /v path ^| findstr /i "\<path\>"') do (
-		rem // make addition persistent through reboots
-		reg add "%env%" /f /v path /t reg_expand_sz /d "%%j;%~1"
-		rem // apply change to the current process
-		for %%a in ("%%j;%~1") do path %%~a
-	)
-	(setx /m foo bar & reg delete "%env%" /f /v foo) >nul 2>nul
 	goto :eof
 :set_version
-
 	goto :eof
 :help
 	echo.                                                                                                                               
