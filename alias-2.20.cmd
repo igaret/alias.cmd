@@ -4,6 +4,7 @@
 @echo off
 :start_of_script
 	set current_version=2.20
+	set alias_dir=%allusersprofile%\alias
 	if [%1] == [--debug] (
 		@echo on
 		set arg1=%2
@@ -30,20 +31,22 @@
 		goto :update_check
 	)
 :update_check
-	set alias_dir=%allusersprofile%\alias
-	if exist %alias_dir%\current_version.txt (
-		set /p alias_local_version=<%alias_dir%\current_version.txt 
-	) else (
-		set alias_local_version=%current_version%
-	)
-	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt>alias_online_version.txt 2>nul
-	set /p alias_online_version=<alias_online_version.txt
-	del /s /q alias_online_version.txt >nul 2>nul
-	endlocal
 	if [%arg1%] == [--setup] (
 		doskey alias=
 		doskey alias=%alias_dir%\alias-%alias_online_version%.cmd $1	
+		goto :eof
 	)
+	if exist %alias_dir%\current_version.txt (
+	::	set /p alias_local_version=<%alias_dir%\current_version.txt 
+		del %alias_dir%\current_version.txt
+		set alias_local_version=%current_version%		
+	) else (
+		set alias_local_version=%current_version%
+	)
+	curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/current_version.txt>%tmp%\alias_online_version.txt 2>nul
+	set /p alias_online_version=<%tmp%\alias_online_version.txt
+	del /s /q %tmp%\alias_online_version.txt >nul 2>nul
+	endlocal
 	if [%alias_online_version%] gtr [%alias_local_version%] (
 		echo updating to %alias_online_version%
 		doskey alias=	
