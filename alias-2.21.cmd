@@ -75,7 +75,6 @@ endlocal
 	if [%arg1%] == [reset] ( goto :reset ) else ( goto :parser6 )
 :parser6
 	if [%arg1%] == [] ( goto :list ) else ( goto :init_exec_alias )
-	goto :save
 :selfpreservation
 	set cmd_as_arg=%arg1%
 	echo.
@@ -87,10 +86,6 @@ endlocal
 	doskey /macros
 	echo.
 	goto :save
-:reset
-	del %useraliases%
-	doskey
-	goto :cleanup
 :init_exec_alias
 	doskey %arg1%=%arg2% %arg3% %arg4% %arg5% %arg6% %arg7% %arg8%
 	del %useraliases%
@@ -99,9 +94,6 @@ endlocal
 	doskey /macros>%useraliases%
 	doskey /macros>>%useraliases_history%
 	goto :cleanup
-:up_to_date
-	echo alias.cmd is up to date
-	echo.
 :cleanup
 	set useraliases=""
 	set cmd_as_arg=""
@@ -115,19 +107,10 @@ endlocal
 	set arg8=""
 	set current_version=""
 	goto :eof
-:env
-	goto :eof
-:env-append_path <val>
-	goto :eof
-:set_version
-	goto :eof
 :help
 	echo.                                                                                                                               
 	echo  alias -- expanded doskey functionality                                                                                                                           
 	echo.
 	goto :eof
-:install
-	goto :eof
 :end
 :eof
-`
