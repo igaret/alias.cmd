@@ -1,14 +1,16 @@
 :: alias.cmd
-:: version 2.21
+:: version 2.22
 :: by garet mccallister (g4r3t-mcc4ll1st3r/izryel)
 @echo off
 :start_of_script
 	set alias_dir=%allusersprofile%\alias
-	set current_version=2.21
+	set current_version=2.22
+	set useraliases=%userprofile%\.aliases
 :update_check
 	if [%1] == [--setup] (
 		doskey alias=
-		doskey alias=%alias_dir%\alias-%alias_online_version%.cmd $*
+		doskey /macros>%useraliases%
+		doskey alias=%alias_dir%\alias.cmd $*
 		goto :end
 	)
 	set alias_local_version=%current_version%
@@ -36,9 +38,33 @@
 			echo %current_version%
 			goto :end
 		) else (
+		if [%1] == [/?] (
+			goto :help
+		) else (
+		if [%1] == [-?] (
+			goto :help
+		) else (
+		if [%1] == [?] (
+			goto :help
+		) else (
+		if [%1] == [-h] (
+			goto :help
+		) else (
+		if [%1] == [--help] (
+			goto :help
+		) else (
+		if [%1] == [help] (
+			goto :help
+		) else (
 			goto :end
 		)
 	)
+
+:help
+	echo.                                                                                                                               
+	echo  alias -- expanded doskey functionality                                                                                                                           
+	echo.
+	goto :eof
 :end
 	%alias_dir%\alias-%current_version%.cmd %*
 :eof
