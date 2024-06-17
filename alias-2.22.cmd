@@ -1,5 +1,5 @@
 :: alias-[current_version].cmd
-:: version 2.21
+:: version 2.22
 :: by garet mccallister (g4r3t-mcc4ll1st3r/izryel)
 @echo off
 :arg_debugger
@@ -105,11 +105,6 @@ endlocal
 	set arg7=""
 	set arg8=""
 	set current_version=""
-	goto :eof
-:help
-	echo.                                                                                                                               
-	echo  alias -- expanded doskey functionality                                                                                                                           
-	echo.
 	goto :eof
 :end
 :eof
