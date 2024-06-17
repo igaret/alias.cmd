@@ -22,7 +22,7 @@
 		ren %alias_dir%\alias-%current_version%.cmd %alias_dir%\.alias_%current_version%-deprecated-%date%		
 		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
 		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/alias-%alias_online_version%.cmd>%alias_dir%\alias-%alias_online_version%.cmd 2>nul
-		curl https://raw.githubusercontent.com/g4r3t-mcc4ll1st3r/alias.cmd/master/refrenv.cmd>%alias_dir%\refrenv.cmd 2>nul
+		curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.bat 2>nul
 		goto :pre-init
 	) else (
 		goto :pre-init
