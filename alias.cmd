@@ -1,8 +1,9 @@
 :: alias-[current_version].cmd
-:: version 2.21
+:: version 2.22
 :: by garet mccallister (g4r3t-mcc4ll1st3r/izryel)
 @echo off
 endlocal
+set current_version=2.22
 :start_of_script
 	if [%1] == [--debug] (
 		@echo on
