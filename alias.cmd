@@ -101,11 +101,11 @@ set current_version=2.22
 	)
 	goto :eof
 :setup_check
-	set alias_dir=%allusersprofile%\alias
-	set current_version=2.21
+	setx alias_dir "%allusersprofile%\alias" /m
 	set useraliases=%userprofile%\alias\.aliases
 	if not exist %alias_dir% (
-		mkdir [%alias_dir%]
+		mkdir %alias_dir%
+		setx path "%PATH%;%alias_dir%" /m
 		doskey example=dir /b %userprofile%
 		doskey /macros>%useraliases%
 	)
