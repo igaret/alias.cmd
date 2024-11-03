@@ -1,9 +1,9 @@
-:: alias-[current_version].cmd
-:: version 2.22
+:: alias.cmd
+:: version 2.23
 :: by garet mccallister (g4r3t-mcc4ll1st3r/izryel)
 @echo off
 endlocal
-set current_version=2.22
+set current_version=2.23
 :start_of_script
 	if [%1] == [--debug] (
 		@echo on
@@ -108,7 +108,11 @@ set current_version=2.22
 		setx path "%PATH%;%alias_dir%" /m
 		doskey example=dir /b %userprofile%
 		doskey /macros>%useraliases%
+		curl https://raw.githubusercontent.com/igaret/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
+		curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.cmd 2>nul		
 	)
+	echo alias setup complete.
+	del /s /q %~dp0/%0
 	goto :eof
 :end
 :eof
