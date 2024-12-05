@@ -34,7 +34,7 @@ set current_version=2.3
 	set alias_dir=%allusersprofile%\alias
 	set useraliases=%userprofile%\.aliases
 	set useraliases_history=%userprofile%\.aliases_history
-	if exist %useraliases% goto :parser3
+	if exist %useraliases% goto :parser4
 	if not exist %useraliases% echo. > %useraliases%
 	if not exist %alias_dir% goto :user_setup_query
 :pre_user_setup_query
@@ -123,9 +123,10 @@ set current_version=2.3
 	curl https://raw.githubusercontent.com/igaret/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
 	curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.cmd 2>nul		
 	setx path "%PATH%;%alias_dir%" /m
-	%alias_dir%\refrenv.cmd 
 	echo alias setup complete.
-	echo alias.cmd was moved to %alias_dir% and added tp ^%PATH^%
+	echo alias.cmd was moved to %alias_dir% and added to PATH
+	del /s /q "%~f0" 2>nul
+	%alias_dir%\refrenv.cmd 
 	call :post_inst & exit /b 
 :reset
 	del /s /q %useraliases%
@@ -133,7 +134,7 @@ set current_version=2.3
 	echo reset complete
 	goto :eof
 :post_inst
-(goto) 2>nul & del "%~f0"
+	(goto) 2>nul & timeout /t 1 2>nul
 :end
 :eof
 ::		call :setup_check
