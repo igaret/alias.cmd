@@ -54,6 +54,8 @@ set current_version=2.3
 	if /i "%user_input%" == "n" goto :parser3
 	echo incorrect input & goto :user_setup_query
 :parser3
+	echo ok. skipping install.
+	echo if you change your mind later, just run "alias setup"
 	endlocal
 	goto :parser4
 :parser4
@@ -120,6 +122,7 @@ set current_version=2.3
 	setx path "%PATH%;%alias_dir%" /m
 	%alias_dir%\refrenv.cmd 
 	echo alias setup complete.
+	echo alias.cmd was moved to %alias_dir% and added tp ^%PATH^%
 	call :post_inst & exit /b 
 :reset
 	del /s /q %useraliases%
