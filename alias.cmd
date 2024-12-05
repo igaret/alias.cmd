@@ -51,11 +51,14 @@ set current_version=2.3
 	set user_input=
 	set /p user_input=(y/n): 
 	if /i "%user_input%" == "y" goto :setup_alias
-	if /i "%user_input%" == "n" goto :parser3
+	if /i "%user_input%" == "n" goto :decline_setup
 	echo incorrect input & goto :user_setup_query
-:parser3
+:decline_setup
+	echo.
 	echo ok. skipping install.
 	echo if you change your mind later, just run "alias setup"
+	echo.
+:parser3
 	endlocal
 	goto :parser4
 :parser4
