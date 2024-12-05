@@ -1,10 +1,10 @@
 :: alias.cmd
-:: version 2.23
-:: by garet mccallister (g4r3t-mcc4ll1st3r/izryel)
+:: version 2.3
+:: by garet mccallister (g4r3t-mcc4ll1st3r/izryel/igaret)
 @echo off
 endlocal
-set current_version=2.23
-:start_of_script
+set current_version=2.3
+:init
 	if [%1] == [--debug] (
 		@echo on
 		set arg1=%2
@@ -15,8 +15,6 @@ set current_version=2.23
 		set arg6=%7
 		set arg7=%8
 		set arg8=%9
-		call :setup_check
-		call :update_check
 		goto :script_start
 	) else (
 		set arg1=%1
@@ -28,35 +26,40 @@ set current_version=2.23
 		set arg7=%7
 		set arg8=%8
 		@echo off
-		call :setup_check
-		call :update_check
 		goto :script_start
 	)
 :script_start
+	if [%arg1%] == [alias] ( goto :selfpreservation )
+	if [%arg1%] == [doskey] ( goto :selfpreservation )
+	set alias_dir=%allusersprofile%\alias
 	set useraliases=%userprofile%\.aliases
-	set useraliases_history=%userprofile%\.aliases_history%
-	if not exist %useraliases% echo. > %useraliases%
+	set useraliases_history=%userprofile%\.aliases_history
+	if not exist %useraliases% ( echo. > %useraliases% )
+	if not exist %useraliases% ( goto :user_setup_query ) else ( goto :parser3 )
+:user_setup_query
+	echo "Install ALIAS for permanent use?"
+	set user_input=
+	set /p user_input=(y/n): 
+	if /i "%user_input%" == "y" ( goto :setup_alias ) else ( goto :parser4 )
+	echo incorrect input & goto :user_setup_query
+:parser3
 	doskey /macrofile=%useraliases%
 	doskey /macros > %useraliases%
-:parser2
 	endlocal
-	goto :parser4a
-:parser3
-:parser4a
-	if [%arg1%] == [alias] ( goto :selfpreservation ) else ( goto :parser4b )
-:parser4b
-	if [%arg1%] == [doskey] ( goto :selfpreservation ) else ( goto :parser5a)
-:parser5a
-	if [%arg1%] == [update] ( goto :update ) else ( goto :parser5b )
-:parser5b
-	if [%arg1%] == [reset] ( goto :reset ) else ( goto :parser6 )
+	goto :parser4
+:parser4
+	if [%arg1%] == [setup] ( goto :user_setup_query ) else ( goto :parser5 )
+:parser5
+	if [%arg1%] == [update] ( goto :update_check ) else ( goto :parser6 )
 :parser6
+	if [%arg1%] == [reset] ( goto :reset ) else ( goto :parser7 )
+:parser7
 	if [%arg1%] == [] ( goto :list ) else ( goto :init_exec_alias )
 :selfpreservation
 	set cmd_as_arg=%arg1%
 	echo.
 	echo cannot set an %cmd_as_arg% for %cmd_as_arg%, it would be creating an alias/doskey paradox.
-	echo.
+	echo
 	goto :cleanup
 :list
 	echo.
@@ -100,19 +103,24 @@ set current_version=2.23
 		curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.cmd 2>nul		
 	)
 	goto :eof
-:setup_check
-	setx alias_dir "%allusersprofile%\alias" /m
-	set useraliases=%userprofile%\alias\.aliases
-	if not exist %alias_dir% (
-		mkdir %alias_dir%
-		setx path "%PATH%;%alias_dir%" /m
-		doskey example=dir /b %userprofile%
-		doskey /macros>%useraliases%
-		curl https://raw.githubusercontent.com/igaret/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
-		curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.cmd 2>nul		
-	)
+:setup_alias
+	if not exist %alias_dir% ( mkdir %alias_dir% ) else ( goto :setup_alias2 )
+:setup_alias2
+	curl https://raw.githubusercontent.com/igaret/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
+	curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.cmd 2>nul		
+	setx path "%PATH%;%alias_dir%" /m
+	%alias_dir%\refrenv.cmd 
 	echo alias setup complete.
-	del /s /q %~dp0/%0
+	goto :eof
+:reset
+	del /s /q %useraliases%
+	echo reset complete
 	goto :eof
 :end
 :eof
+::		call :setup_check
+::		call :update_check
+::	setx alias_dir "%allusersprofile%\alias" /m
+::		setx path "%PATH%;%alias_dir%"
+
+::	del /s /q %~dp0/%0
