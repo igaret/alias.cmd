@@ -34,21 +34,30 @@ set current_version=2.3
 	set alias_dir=%allusersprofile%\alias
 	set useraliases=%userprofile%\.aliases
 	set useraliases_history=%userprofile%\.aliases_history
-	if not exist %useraliases% ( echo. > %useraliases% )
-	if not exist %useraliases% ( goto :user_setup_query ) else ( goto :parser3 )
+	if exist %useraliases% goto :parser3
+	if not exist %useraliases% echo. > %useraliases%
+	if not exist %alias_dir% goto :user_setup_query
+:pre_user_setup_query
+	set arg1=%arg2%
+	set arg2=%arg3%
+	set arg3=%arg4%
+	set arg4=%arg5%
+	set arg5=%arg6%
+	set arg6=%arg7%
+	set arg7=%arg8%
+	set arg8=%arg9%
 :user_setup_query
-	echo "Install ALIAS for permanent use?"
+	echo Install ALIAS for permanent use?
 	set user_input=
 	set /p user_input=(y/n): 
-	if /i "%user_input%" == "y" ( goto :setup_alias ) else ( goto :parser4 )
+	if /i "%user_input%" == "y" goto :setup_alias
+	if /i "%user_input%" == "n" goto :parser3
 	echo incorrect input & goto :user_setup_query
 :parser3
-	doskey /macrofile=%useraliases%
-	doskey /macros > %useraliases%
 	endlocal
 	goto :parser4
 :parser4
-	if [%arg1%] == [setup] ( goto :user_setup_query ) else ( goto :parser5 )
+	if [%arg1%] == [setup] ( goto :pre_user_setup_query ) else ( goto :parser5 )
 :parser5
 	if [%arg1%] == [update] ( goto :update_check ) else ( goto :parser6 )
 :parser6
@@ -91,7 +100,7 @@ set current_version=2.3
 	echo.                                                                                                                               
 	echo  alias -- expanded doskey functionality                                                                                                                           
 	echo.
-	goto :eof
+	goto :cleanup
 :update_check
 	curl https://raw.githubusercontent.com/igaret/alias.cmd/master/current_version.txt>%tmp%\alias_online_version.txt 2>nul
 	set /p alias_online_version=<%tmp%\alias_online_version.txt
@@ -102,20 +111,23 @@ set current_version=2.3
 		curl https://raw.githubusercontent.com/igaret/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
 		curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.cmd 2>nul		
 	)
-	goto :eof
+	goto :cleanup
 :setup_alias
-	if not exist %alias_dir% ( mkdir %alias_dir% ) else ( goto :setup_alias2 )
+	if not exist %alias_dir% mkdir %alias_dir%
 :setup_alias2
 	curl https://raw.githubusercontent.com/igaret/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
 	curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.cmd 2>nul		
 	setx path "%PATH%;%alias_dir%" /m
 	%alias_dir%\refrenv.cmd 
 	echo alias setup complete.
-	goto :eof
+	call :post_inst & exit /b 
 :reset
 	del /s /q %useraliases%
+	echo. > %useraliases%
 	echo reset complete
 	goto :eof
+:post_inst
+(goto) 2>nul & del "%~f0"
 :end
 :eof
 ::		call :setup_check
