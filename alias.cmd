@@ -1,9 +1,9 @@
 :: alias.cmd
-:: version 2.3
+:: version 2.31
 :: by garet mccallister (g4r3t-mcc4ll1st3r/izryel/igaret)
 @echo off
 endlocal
-set current_version=2.3
+set current_version=2.31
 :init
 	if [%1] == [--debug] (
 		@echo on
@@ -34,7 +34,7 @@ set current_version=2.3
 	set alias_dir=%allusersprofile%\alias
 	set useraliases=%userprofile%\.aliases
 	set useraliases_history=%userprofile%\.aliases_history
-	if exist %useraliases% goto :parser4
+	if exist %useraliases% goto :parser3
 	if not exist %useraliases% echo. > %useraliases%
 	if not exist %alias_dir% goto :user_setup_query
 :pre_user_setup_query
@@ -59,6 +59,7 @@ set current_version=2.3
 	echo if you change your mind later, just run "alias setup"
 	echo.
 :parser3
+	doskey /macrofile=%useraliases%
 	endlocal
 	goto :parser4
 :parser4
@@ -85,8 +86,8 @@ set current_version=2.3
 	del %useraliases%
 	goto :save
 :save
-	doskey /macros>%useraliases%
-	doskey /macros>>%useraliases_history%
+	doskey /macros > %useraliases%
+	doskey /macros >> %useraliases_history%
 	goto :cleanup
 :cleanup
 	set useraliases=""
@@ -123,10 +124,9 @@ set current_version=2.3
 	curl https://raw.githubusercontent.com/igaret/alias.cmd/master/alias.cmd>%alias_dir%\alias.cmd 2>nul
 	curl https://raw.githubusercontent.com/badrelmers/RefrEnv/main/refrenv.bat>%alias_dir%\refrenv.cmd 2>nul		
 	setx path "%PATH%;%alias_dir%" /m
-	echo alias setup complete.
-	echo alias.cmd was moved to %alias_dir% and added to PATH
-	del /s /q "%~f0" 2>nul
 	%alias_dir%\refrenv.cmd 
+	echo alias setup complete.
+	echo alias.cmd was moved to %alias_dir% and added tp ^%PATH^%
 	call :post_inst & exit /b 
 :reset
 	del /s /q %useraliases%
@@ -134,12 +134,6 @@ set current_version=2.3
 	echo reset complete
 	goto :eof
 :post_inst
-	(goto) 2>nul & timeout /t 1 2>nul
+	(goto) 2>nul & del "%~f0"
 :end
 :eof
-::		call :setup_check
-::		call :update_check
-::	setx alias_dir "%allusersprofile%\alias" /m
-::		setx path "%PATH%;%alias_dir%"
-
-::	del /s /q %~dp0/%0
