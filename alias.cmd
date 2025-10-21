@@ -1,9 +1,8 @@
 :: alias.cmd
-:: version 2.31
+:: version 2.4
 :: by garet mccallister (g4r3t-mcc4ll1st3r/izryel/igaret)
 @echo off
-endlocal
-set current_version=2.31
+set current_version=2.41
 :init
 	if [%1] == [--debug] (
 		@echo on
@@ -29,14 +28,25 @@ set current_version=2.31
 		goto :script_start
 	)
 :script_start
-	if [%arg1%] == [alias] ( goto :selfpreservation )
-	if [%arg1%] == [doskey] ( goto :selfpreservation )
 	set alias_dir=%allusersprofile%\alias
 	set useraliases=%userprofile%\.aliases
 	set useraliases_history=%userprofile%\.aliases_history
-	if exist %useraliases% goto :parser3
-	if not exist %useraliases% echo. > %useraliases%
 	if not exist %alias_dir% goto :user_setup_query
+	if [%arg1%] == [alias] (
+		goto :selfpreservation
+	)
+	if [%arg1%] == [doskey] (
+		goto :selfpreservation
+	)
+	if [%arg1%] == [unalias] (
+		goto :selfpreservation
+	)
+	if exist %useraliases% (
+		goto :parser1
+	) else (
+		echo unalias=%alias_dir%\alias.cmd $1^^= > %useraliases%
+	)
+	goto :parser1
 :pre_user_setup_query
 	set arg1=%arg2%
 	set arg2=%arg3%
@@ -49,40 +59,67 @@ set current_version=2.31
 :user_setup_query
 	echo Install ALIAS for permanent use?
 	set user_input=
-	set /p user_input=(y/n): 
-	if /i "%user_input%" == "y" goto :setup_alias
-	if /i "%user_input%" == "n" goto :decline_setup
-	echo incorrect input & goto :user_setup_query
+	set /p user_input=(y)es/(n)o: 
+	if /i [%user_input%] == [y] ( 
+		goto :setup_alias
+	) else (
+		goto :decline_setup
+	)
+	goto :user_setup_query
 :decline_setup
 	echo.
 	echo ok. skipping install.
 	echo if you change your mind later, just run "alias setup"
 	echo.
+:parser1
+	C:\windows\system32\doskey.exe /macrofile=%useraliases%
+	if [%arg1%] == [setup] (
+		goto :pre_user_setup_query
+	) else (
+		goto :parser2
+	)
+:parser2
+	if [%arg1%] == [update] (
+		goto :update_check
+	) else (
+		goto :parser3
+	)
 :parser3
-	doskey /macrofile=%useraliases%
-	endlocal
-	goto :parser4
+	if [%arg1%] == [reset] (
+		goto :reset
+	) else (
+		goto :parser4
+	)
 :parser4
-	if [%arg1%] == [setup] ( goto :pre_user_setup_query ) else ( goto :parser5 )
-:parser5
-	if [%arg1%] == [update] ( goto :update_check ) else ( goto :parser6 )
-:parser6
-	if [%arg1%] == [reset] ( goto :reset ) else ( goto :parser7 )
-:parser7
-	if [%arg1%] == [] ( goto :list ) else ( goto :init_exec_alias )
+	if [%arg1%] == [] (
+		goto :list
+	) else (
+		goto :init_exec_alias
+	)
 :selfpreservation
 	set cmd_as_arg=%arg1%
+	set is_unalias=%0
+	if [%0] == [unalias] (
+		goto :init_exec_unalias
+	) else (
+		goto :selfpreservation_echo
+	)
+:selfpreservation_echo
 	echo.
 	echo cannot set an %cmd_as_arg% for %cmd_as_arg%, it would be creating an alias/doskey paradox.
 	echo
 	goto :cleanup
 :list
 	echo.
-	doskey /macros
+	C:\windows\system32\doskey.exe /macros
 	echo.
 	goto :save
+:init_exec_unalias
+	del %useraliases%
+	C:\windows\system32\doskey.exe %arg1%=
+	goto :save
 :init_exec_alias
-	doskey %arg1%=%arg2% %arg3% %arg4% %arg5% %arg6% %arg7% %arg8%
+	C:\windows\system32\doskey.exe %arg1%=%arg2% %arg3% %arg4% %arg5% %arg6% %arg7% %arg8%
 	del %useraliases%
 	goto :save
 :save
